@@ -20,10 +20,12 @@
                 <div><label class="block text-sm text-white/70 mb-1">Deskripsi</label><textarea v-model="form.description" class="input-field min-h-[60px]"></textarea></div>
                 <div><label class="block text-sm text-white/70 mb-1">Alamat</label><textarea v-model="form.address" class="input-field min-h-[60px]"></textarea></div>
                 <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-sm text-white/70 mb-1">Jalur Penerimaan</label><input v-model="form.jalur" class="input-field" placeholder="Cth: Mandiri" /></div>
                     <div><label class="block text-sm text-white/70 mb-1">Jam Operasional</label><input v-model="form.operational_hours" class="input-field" /></div>
                     <div><label class="block text-sm text-white/70 mb-1">Telepon</label><input v-model="form.phone" class="input-field" /></div>
                 </div>
                 <div><label class="block text-sm text-white/70 mb-1">Email</label><input v-model="form.email" type="email" class="input-field" /></div>
+                <div><label class="block text-sm text-white/70 mb-1">Identitas Mahasiswa yang Pernah Magang</label><textarea v-model="form.alumni_magang" class="input-field min-h-[60px]"></textarea></div>
                 <div class="flex gap-3 justify-end pt-2">
                     <button type="button" @click="showForm=false" class="btn-ghost">Batal</button>
                     <button type="submit" :disabled="form.processing" class="btn-primary">Simpan</button>
@@ -50,7 +52,7 @@ import DataTable from '@/Components/DataTable.vue';
 import Modal from '@/Components/Modal.vue';
 defineProps({ companies: Array });
 const showForm = ref(false); const editing = ref(null); const confirmDelete = ref(null);
-const form = useForm({ name:'',logo_url:'',description:'',address:'',operational_hours:'',phone:'',email:'' });
+const form = useForm({ name:'',logo_url:'',description:'',address:'',jalur:'',kuota:'',alumni_magang:'',operational_hours:'',phone:'',email:'' });
 const openAdd = () => { editing.value=null; form.reset(); showForm.value=true; };
 const openEdit = (c) => { editing.value=c; Object.keys(form.data()).forEach(k=>form[k]=c[k]||''); showForm.value=true; };
 const submitForm = () => {
@@ -64,6 +66,6 @@ const menuItems = [
     { label:'Pengguna', routeName:'admin.pengguna', href:route('admin.pengguna'), icon:'<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>' },
     { label:'Daftar Perusahaan', routeName:'admin.perusahaan', href:route('admin.perusahaan'), icon:'<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>' },
     { label:'Daftar Mahasiswa Magang', routeName:'admin.mahasiswa_magang', href:route('admin.mahasiswa_magang'), icon:'<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>' },
-    { label:'Surat Pengantar', routeName:'admin.surat_pengantar', href:route('admin.surat_pengantar'), icon:'<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>' },
+    { label:'Daftar Pengajuan Magang', routeName:'admin.pengajuan_magang', href:route('admin.pengajuan_magang'), icon:'<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>' },
 ];
 </script>

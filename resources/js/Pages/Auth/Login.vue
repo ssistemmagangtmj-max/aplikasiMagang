@@ -41,12 +41,7 @@
                         <label class="block text-sm font-medium text-white/70 mb-1.5">Password</label>
                         <input v-model="form.password" type="password" class="input-field"/>
                     </div>
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input v-model="form.remember" type="checkbox" class="w-4 h-4 rounded bg-white/10 border-white/20 text-primary-500 focus:ring-primary-500" />
-                            <span class="text-sm text-white/60">Ingat saya</span>
-                        </label>
-                    </div>
+
                     <button type="submit" :disabled="form.processing" class="btn-primary w-full flex items-center justify-center gap-2">
                         <div v-if="form.processing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         <span>{{ form.processing ? 'Masuk...' : 'Masuk' }}</span>
@@ -59,6 +54,6 @@
 
 <script setup>
 import { Head, useForm, router } from '@inertiajs/vue3';
-const form = useForm({ id_pengguna: '', password: '', remember: false });
+const form = useForm({ id_pengguna: '', password: '' });
 const submit = () => form.post(route('login'));
 </script>

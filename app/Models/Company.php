@@ -11,7 +11,7 @@ class Company extends Model
 
     protected $fillable = [
         'name', 'logo_url', 'description', 'address',
-        'operational_hours', 'phone', 'email',
+        'operational_hours', 'phone', 'email', 'jalur', 'kuota', 'alumni_magang',
     ];
 
     public function internshipApplications()

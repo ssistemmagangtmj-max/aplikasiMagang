@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/magang/apply', [MahasiswaController::class, 'applyMagang'])->name('magang.apply');
         Route::get('/magang/custom', [MahasiswaController::class, 'customApplication'])->name('magang.custom');
         Route::post('/magang/custom', [MahasiswaController::class, 'submitCustomApplication'])->name('magang.custom.submit');
+        Route::post('/magang/upload-bukti', [MahasiswaController::class, 'uploadBuktiPenerimaan'])->name('magang.upload_bukti');
         Route::get('/laporan', [MahasiswaController::class, 'laporan'])->name('laporan');
         Route::post('/laporan/upload', [MahasiswaController::class, 'uploadLaporan'])->name('laporan.upload');
         Route::get('/laporan/template', [MahasiswaController::class, 'downloadTemplate'])->name('laporan.template');
@@ -48,6 +49,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
         Route::get('/pengguna', [AdminController::class, 'pengguna'])->name('pengguna');
         Route::post('/pengguna', [AdminController::class, 'tambahUser'])->name('pengguna.store');
+        Route::get('/pengguna/{user}', [AdminController::class, 'detailPengguna'])->name('pengguna.detail');
+        Route::put('/pengguna/{user}', [AdminController::class, 'updatePengguna'])->name('pengguna.update');
+        Route::delete('/pengguna/{user}', [AdminController::class, 'deletePengguna'])->name('pengguna.destroy');
         Route::patch('/pengguna/{user}/approve', [AdminController::class, 'approveUser'])->name('pengguna.approve');
         Route::patch('/pengguna/{user}/reject', [AdminController::class, 'rejectUser'])->name('pengguna.reject');
         
@@ -57,11 +61,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('/perusahaan/{company}', [AdminController::class, 'deletePerusahaan'])->name('perusahaan.destroy');
         
         Route::get('/mahasiswa-magang', [AdminController::class, 'daftarMahasiswaMagang'])->name('mahasiswa_magang');
-        Route::patch('/mahasiswa-magang/{application}/assign-dosen', [AdminController::class, 'assignDosen'])->name('mahasiswa_magang.assign');
         
-        Route::get('/surat-pengantar', [AdminController::class, 'suratPengantar'])->name('surat_pengantar');
-        Route::patch('/surat-pengantar/{application}/proses', [AdminController::class, 'prosesSurat'])->name('surat_pengantar.proses');
-        Route::post('/surat-pengantar/{application}/terbitkan', [AdminController::class, 'terbitkanSurat'])->name('surat_pengantar.terbitkan');
+        Route::get('/pengajuan-magang', [AdminController::class, 'daftarPengajuanMagang'])->name('pengajuan_magang');
+        Route::get('/pengajuan-magang/{application}/download-bukti', [AdminController::class, 'downloadBuktiPenerimaan'])->name('pengajuan_magang.download_bukti');
+        Route::get('/pengajuan-magang/{application}', [AdminController::class, 'detailPengajuan'])->name('pengajuan_magang.detail');
+        Route::patch('/pengajuan-magang/{application}/tolak', [AdminController::class, 'tolakPengajuan'])->name('pengajuan_magang.tolak');
+        Route::post('/pengajuan-magang/{application}/terbitkan', [AdminController::class, 'terbitkanSurat'])->name('pengajuan_magang.terbitkan');
+        Route::patch('/pengajuan-magang/{application}/approve-bukti', [AdminController::class, 'approveBukti'])->name('pengajuan_magang.approve_bukti');
+        Route::patch('/pengajuan-magang/{application}/reject-bukti', [AdminController::class, 'rejectBukti'])->name('pengajuan_magang.reject_bukti');
     });
 
     // Dosen Pembimbing routes
@@ -70,6 +77,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan', [DosenController::class, 'laporan'])->name('laporan');
         Route::get('/laporan/{user}', [DosenController::class, 'showMahasiswaLaporan'])->name('laporan.detail');
         Route::patch('/laporan/{report}/approve', [DosenController::class, 'approveReport'])->name('laporan.approve');
-        Route::patch('/laporan/{report}/revise', [DosenController::class, 'reviseReport'])->name('laporan.revise');
+        Route::post('/laporan/{report}/revise', [DosenController::class, 'reviseReport'])->name('laporan.revise');
     });
 });

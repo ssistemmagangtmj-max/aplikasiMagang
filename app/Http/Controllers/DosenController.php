@@ -7,6 +7,7 @@ use App\Models\InternshipReport;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class DosenController extends Controller
@@ -41,9 +42,8 @@ class DosenController extends Controller
 
     public function showMahasiswaLaporan(User $user)
     {
-        $reports = InternshipReport::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Ambil satu laporan aktif mahasiswa
+        $report = InternshipReport::where('user_id', $user->id)->first();
 
         $application = InternshipApplication::with('company')
             ->where('user_id', $user->id)
@@ -53,7 +53,7 @@ class DosenController extends Controller
 
         return Inertia::render('Dosen/LaporanMahasiswa', [
             'student' => $user->only(['id', 'name', 'id_pengguna', 'jurusan', 'prodi']),
-            'reports' => $reports,
+            'report' => $report,
             'application' => $application,
         ]);
     }
@@ -72,12 +72,30 @@ class DosenController extends Controller
 
     public function reviseReport(Request $request, InternshipReport $report)
     {
-        $request->validate(['revision_notes' => 'required|string']);
+        $request->validate([
+            'revision_notes' => 'required|string',
+            'revision_file' => 'nullable|file|max:10240|mimes:pdf,jpg,jpeg,png,doc,docx',
+        ]);
 
-        $report->update([
+        $updateData = [
             'status' => 'revision',
             'revision_notes' => $request->revision_notes,
-        ]);
+        ];
+
+        // Jika ada file revisi baru, hapus yang lama dan simpan yang baru
+        if ($request->hasFile('revision_file')) {
+            if ($report->revision_file_path) {
+                Storage::disk('public')->delete($report->revision_file_path);
+            }
+            $revFile = $request->file('revision_file');
+            $updateData['revision_file_path'] = $revFile->storeAs(
+                'revisi-laporan',
+                $revFile->getClientOriginalName(),
+                'public'
+            );
+        }
+
+        $report->update($updateData);
 
         Notification::send($report->user_id, 'laporan_revisi', [
             'message' => "Laporan Anda perlu direvisi. Catatan: {$request->revision_notes}",

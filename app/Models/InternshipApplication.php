@@ -12,7 +12,7 @@ class InternshipApplication extends Model
     protected $fillable = [
         'user_id', 'company_id', 'custom_company_name', 'custom_company_address',
         'period_start', 'period_end', 'status', 'letter_file',
-        'rejection_reason', 'supervisor_id',
+        'rejection_reason', 'supervisor_id', 'acceptance_proof_file'
     ];
 
     protected function casts(): array

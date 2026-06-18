@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Sistem Pendaftaran Magang Anti Gravity">
-    <title inertia>{{ config('app.name', 'Anti Gravity Magang') }}</title>
+    <meta name="description" content="Sistem Pendaftaran Magang">
+    <title inertia>{{ config('app.name', 'Magang') }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800&display=swap" rel="stylesheet" />
     @routes

@@ -11,15 +11,23 @@
                 <a v-for="c in companies" :key="c.id" :href="route('mahasiswa.magang.company', c.id)" @click.prevent="$inertia.visit(route('mahasiswa.magang.company', c.id))"
                    class="glass-card p-5 hover:border-primary-500/40 hover:bg-white/5 transition-all group">
                     <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500/20 to-accent-500/20 flex items-center justify-center shrink-0 text-xl font-bold text-primary-300">
-                            {{ c.name.charAt(0) }}
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500/20 to-accent-500/20 flex items-center justify-center shrink-0 overflow-hidden">
+                            <img v-if="c.logo_url" :src="c.logo_url" :alt="c.name + ' logo'"
+                                 class="w-full h-full object-contain"
+                                 @error="e => e.target.style.display='none'" />
+                            <span v-else class="text-xl font-bold text-primary-300">{{ c.name.charAt(0) }}</span>
                         </div>
                         <div class="flex-1 min-w-0">
                             <h3 class="font-semibold text-white group-hover:text-primary-300 transition truncate">{{ c.name }}</h3>
                             <p class="text-xs text-white/40 mt-1 line-clamp-2">{{ c.description || 'Tidak ada deskripsi' }}</p>
-                            <p v-if="c.address" class="text-xs text-white/30 mt-2 flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
-                                {{ c.address }}
+                            
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                <span v-if="c.jalur" class="text-[10px] px-2 py-0.5 rounded border border-primary-500/30 text-primary-300 bg-primary-500/10">{{ c.jalur }}</span>
+                            </div>
+
+                            <p v-if="c.address" class="text-xs text-white/30 mt-3 flex items-start gap-1">
+                                <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                                <span class="line-clamp-1">{{ c.address }}</span>
                             </p>
                         </div>
                     </div>
@@ -39,7 +47,6 @@ defineProps({ companies: Array });
 const menuItems = [
     { label: 'Dashboard', routeName: 'mahasiswa.dashboard', href: route('mahasiswa.dashboard'), icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>' },
     { label: 'Daftar Perusahaan', routeName: 'mahasiswa.magang', href: route('mahasiswa.magang'), icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>' },
-    { label: 'Pengajuan Surat Magang', routeName: 'mahasiswa.magang.custom', href: route('mahasiswa.magang.custom'), icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>' },
     { label: 'Laporan Magang', routeName: 'mahasiswa.laporan', href: route('mahasiswa.laporan'), icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>' },
 ];
 </script>
