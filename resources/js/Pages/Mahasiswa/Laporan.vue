@@ -14,15 +14,7 @@
                 </div>
             </a>
 
-            <!-- Info Dosen Pembimbing -->
-            <div v-if="hasSupervisor" class="glass-card p-4 border border-primary-500/20 bg-primary-500/5 flex items-center gap-3">
-                <svg class="w-5 h-5 text-primary-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                <p class="text-sm text-white/70">Dosen Pembimbing: <span class="text-white font-medium">{{ supervisorName }}</span></p>
-            </div>
-            <div v-else class="glass-card p-4 border border-yellow-500/20 bg-yellow-500/5 flex items-center gap-3">
-                <svg class="w-5 h-5 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                <p class="text-sm text-yellow-300">Anda belum memiliki dosen pembimbing. Mohon hubungi admin.</p>
-            </div>
+
 
             <!-- Status Laporan Aktif -->
             <div class="glass-card overflow-hidden">
@@ -100,7 +92,7 @@
 
             <!-- Tombol Upload (hanya saat belum ada laporan atau sudah reviewed, bukan revision) -->
             <div v-if="!report || report.status === 'uploaded'" class="flex">
-                <button @click="showUpload = true" :disabled="!hasSupervisor" class="btn-primary disabled:opacity-40 disabled:cursor-not-allowed">
+                <button @click="showUpload = true" class="btn-primary">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                     {{ report ? 'Upload Ulang Laporan' : 'Upload Laporan' }}
                 </button>
@@ -131,7 +123,7 @@ import AppLayout from '@/Components/AppLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import FileUpload from '@/Components/FileUpload.vue';
 
-defineProps({ report: Object, hasSupervisor: Boolean, supervisorName: String });
+defineProps({ report: Object });
 
 const showUpload = ref(false);
 const uploadForm = useForm({ file: null });

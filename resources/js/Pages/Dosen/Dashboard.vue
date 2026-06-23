@@ -9,7 +9,7 @@
                     </div>
                     <div>
                         <p class="text-3xl font-bold text-white">{{ stats.studentCount }}</p>
-                        <p class="text-sm text-white/50">Mahasiswa yang sedang dibimbing</p>
+                        <p class="text-sm text-white/50">Total Mahasiswa Magang Aktif</p>
                     </div>
                 </div>
             </div>

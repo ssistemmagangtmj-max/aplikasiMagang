@@ -29,11 +29,6 @@ class User extends Authenticatable
         return $this->hasMany(InternshipApplication::class);
     }
 
-    public function supervisedStudents()
-    {
-        return $this->hasMany(InternshipApplication::class, 'supervisor_id');
-    }
-
     public function internshipReports()
     {
         return $this->hasMany(InternshipReport::class);
@@ -57,14 +52,4 @@ class User extends Authenticatable
             ->exists();
     }
 
-    public function getAssignedSupervisor()
-    {
-        $app = $this->internshipApplications()
-            ->where('status', 'approved')
-            ->whereNotNull('supervisor_id')
-            ->latest()
-            ->first();
-
-        return $app ? $app->supervisor : null;
-    }
 }

@@ -58,7 +58,7 @@ class AdminController extends Controller
 
     public function detailPengguna(User $user)
     {
-        $user->load(['internshipApplications.company', 'supervisedStudents.user', 'supervisedStudents.company']);
+        $user->load(['internshipApplications.company']);
         return Inertia::render('Admin/DetailPengguna', [
             'user' => $user,
         ]);
@@ -149,16 +149,13 @@ class AdminController extends Controller
     // === MAHASISWA MAGANG ===
     public function daftarMahasiswaMagang()
     {
-        $applications = InternshipApplication::with(['user', 'company', 'supervisor'])
+        $applications = InternshipApplication::with(['user', 'company'])
             ->whereIn('status', ['approved_admin', 'approved'])
             ->orderBy('created_at', 'desc')
             ->get();
-            
-        $dosens = User::where('role', 'dosen')->get();
 
         return Inertia::render('Admin/MahasiswaMagang', [
             'applications' => $applications,
-            'dosens' => $dosens,
         ]);
     }
 
@@ -167,101 +164,24 @@ class AdminController extends Controller
     // === DAFTAR PENGAJUAN MAGANG ===
     public function daftarPengajuanMagang()
     {
-        $applications = InternshipApplication::with(['user', 'company'])
-            ->where('status', '!=', 'approved')
-            ->orderBy('created_at', 'desc')
+        $mahasiswas = User::where('role', 'mahasiswa')
+            ->with(['internshipApplications' => function ($query) {
+                $query->with('company')->latest()->limit(1);
+            }])
             ->get();
 
         return Inertia::render('Admin/DaftarPengajuanMagang', [
-            'applications' => $applications,
+            'mahasiswas' => $mahasiswas,
         ]);
     }
     
-    public function detailPengajuan(InternshipApplication $application)
-    {
-        $application->load(['user', 'company', 'supervisor']);
-        $dosens = User::where('role', 'dosen')->get();
-
-        return Inertia::render('Admin/PengajuanMagangDetail', [
-            'application' => $application,
-            'dosens' => $dosens,
-        ]);
-    }
-
-    public function tolakPengajuan(Request $request, InternshipApplication $application)
-    {
-        $request->validate(['rejection_reason' => 'required|string']);
-        $application->update([
-            'status' => 'rejected',
-            'rejection_reason' => $request->rejection_reason
-        ]);
-        
-        Notification::send($application->user_id, 'pengajuan_magang', [
-            'message' => "Pengajuan magang Anda ditolak: {$request->rejection_reason}",
-        ]);
-        return redirect()->route('admin.pengajuan_magang')->with('success', 'Pengajuan berhasil ditolak.');
-    }
-    
-    public function terbitkanSurat(Request $request, InternshipApplication $application)
-    {
-        $request->validate([
-            'dosen_id' => 'required|exists:users,id',
-            'letter_file' => 'required|file|max:5120|mimes:pdf,doc,docx',
-        ]);
-
-        $path = $request->file('letter_file')->store('surat-pengantar', 'public');
-
-        $application->update([
-            'status' => 'surat_diterbitkan',
-            'letter_file' => $path,
-            'supervisor_id' => $request->dosen_id,
-        ]);
-        
-        Notification::send($application->user_id, 'surat_pengantar_terbit', [
-            'message' => "Surat pengantar magang telah diterbitkan dan Dosen Pembimbing ditetapkan. Silakan unduh surat dan unggah bukti penerimaan perusahaan.",
-        ]);
-
-        Notification::send($request->dosen_id, 'mahasiswa_assigned', [
-            'message' => "Anda telah ditugaskan sebagai pembimbing untuk mahasiswa {$application->user->name}.",
-        ]);
-        
-        return back()->with('success', 'Surat pengantar berhasil diterbitkan dan dosen pembimbing telah ditetapkan.');
-    }
-
-    public function approveBukti(InternshipApplication $application)
+    public function accPengajuan(InternshipApplication $application)
     {
         $application->update(['status' => 'approved']);
         Notification::send($application->user_id, 'pengajuan_magang', [
-            'message' => "Bukti penerimaan Anda telah disetujui. Anda sekarang aktif magang.",
+            'message' => "Surat Terbit, Proses surat sudah jadi silahkan ke akademik mengisi pengajuan akademik.",
         ]);
-        return back()->with('success', 'Bukti penerimaan disetujui, mahasiswa aktif magang.');
-    }
-
-    public function rejectBukti(Request $request, InternshipApplication $application)
-    {
-        $request->validate(['rejection_reason' => 'required|string']);
-        $application->update([
-            'status' => 'bukti_ditolak',
-            'rejection_reason' => $request->rejection_reason,
-        ]);
-        Notification::send($application->user_id, 'pengajuan_magang', [
-            'message' => "Bukti penerimaan perusahaan ditolak: " . $request->rejection_reason . ". Silakan periksa dan unggah kembali.",
-        ]);
-        return back()->with('success', 'Bukti penerimaan ditolak.');
-    }
-
-    public function downloadBuktiPenerimaan(InternshipApplication $application)
-    {
-        $filePath = $application->acceptance_proof_file;
-
-        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
-            abort(404, 'File bukti penerimaan tidak ditemukan.');
-        }
-
-        $fullPath = Storage::disk('public')->path($filePath);
-        $fileName = 'Bukti_Penerimaan_' . ($application->user->name ?? $application->id) . '_' . basename($filePath);
-
-        return response()->download($fullPath, $fileName);
+        return back()->with('success', 'Pengajuan berhasil di-ACC.');
     }
 }
 

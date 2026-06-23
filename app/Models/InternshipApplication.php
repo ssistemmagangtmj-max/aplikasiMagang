@@ -12,7 +12,7 @@ class InternshipApplication extends Model
     protected $fillable = [
         'user_id', 'company_id', 'custom_company_name', 'custom_company_address',
         'period_start', 'period_end', 'status', 'letter_file',
-        'rejection_reason', 'supervisor_id', 'acceptance_proof_file'
+        'rejection_reason', 'acceptance_proof_file'
     ];
 
     protected function casts(): array
@@ -31,11 +31,6 @@ class InternshipApplication extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
-    }
-
-    public function supervisor()
-    {
-        return $this->belongsTo(User::class, 'supervisor_id');
     }
 
     public function getCompanyNameAttribute(): string

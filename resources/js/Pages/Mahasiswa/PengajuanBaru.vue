@@ -23,7 +23,7 @@
             <p v-if="form.errors.password" class="text-red-400 text-xs mb-3">{{ form.errors.password }}</p>
             <div class="flex gap-3 justify-end">
                 <button @click="showConfirm = false" class="btn-ghost">Batal</button>
-                <button @click="form.post(route('mahasiswa.magang.custom.submit'),{forceFormData:true,onSuccess:()=>showConfirm=false})" :disabled="form.processing" class="btn-primary">Konfirmasi</button>
+                <button @click="form.post(route('mahasiswa.magang.baru.submit'),{forceFormData:true,onSuccess:()=>showConfirm=false})" :disabled="form.processing" class="btn-primary">Konfirmasi</button>
             </div>
         </Modal>
     </AppLayout>

@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\InternshipApplication;
 use App\Models\InternshipReport;
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -15,7 +16,7 @@ class MahasiswaController extends Controller
     public function dashboard()
     {
         $user = auth()->user();
-        $activeApp = $user->internshipApplications()->with('company', 'supervisor')->latest()->first();
+        $activeApp = $user->internshipApplications()->with('company')->latest()->first();
         $latestReport = $user->internshipReports()->latest()->first();
 
         return Inertia::render('Mahasiswa/Dashboard', [
@@ -140,46 +141,14 @@ class MahasiswaController extends Controller
         return redirect()->route('mahasiswa.magang')->with('success', 'Pengajuan tempat magang baru berhasil dikirim!');
     }
 
-    public function uploadBuktiPenerimaan(Request $request)
-    {
-        $request->validate([
-            'acceptance_proof_file' => 'required|file|max:5120|mimes:pdf,jpg,jpeg,png,doc,docx',
-        ]);
 
-        $user = auth()->user();
-        $application = $user->internshipApplications()->latest()->first();
-
-        if (!$application || !in_array($application->status, ['surat_diterbitkan', 'bukti_ditolak'])) {
-            return back()->withErrors(['acceptance_proof_file' => 'Status pengajuan Anda tidak valid untuk mengunggah bukti penerimaan.']);
-        }
-
-        $path = $request->file('acceptance_proof_file')->store('bukti-penerimaan', 'public');
-
-        $application->update([
-            'status' => 'bukti_diunggah',
-            'acceptance_proof_file' => $path,
-        ]);
-
-        $admins = \App\Models\User::where('role', 'admin')->get();
-        foreach ($admins as $admin) {
-            Notification::send($admin->id, 'pengajuan_magang', [
-                'message' => "Mahasiswa '{$user->name}' telah mengunggah bukti penerimaan magang. Mohon segera diverifikasi.",
-                'application_id' => $application->id,
-            ]);
-        }
-
-        return back()->with('success', 'Bukti penerimaan berhasil diunggah. Menunggu verifikasi admin.');
-    }
 
     public function laporan()
     {
         $report = InternshipReport::where('user_id', auth()->id())->first();
-        $supervisor = auth()->user()->getAssignedSupervisor();
 
         return Inertia::render('Mahasiswa/Laporan', [
             'report' => $report,
-            'hasSupervisor' => $supervisor !== null,
-            'supervisorName' => $supervisor?->name,
         ]);
     }
 
@@ -190,11 +159,6 @@ class MahasiswaController extends Controller
         ]);
 
         $user = auth()->user();
-        $supervisor = $user->getAssignedSupervisor();
-
-        if (!$supervisor) {
-            return back()->withErrors(['file' => 'Anda belum memiliki dosen pembimbing.']);
-        }
 
         $file = $request->file('file');
         $originalName = $file->getClientOriginalName();
@@ -223,11 +187,15 @@ class MahasiswaController extends Controller
             ]
         );
 
-        Notification::send($supervisor->id, 'laporan_masuk', [
-            'message' => "Mahasiswa '{$user->name}' telah mengirim laporan magang untuk di-review.",
-            'report_id' => $report->id,
-            'student_id' => $user->id,
-        ]);
+        // Kirim notifikasi ke semua dosen
+        $dosens = User::where('role', 'dosen')->get();
+        foreach ($dosens as $dosen) {
+            Notification::send($dosen->id, 'laporan_masuk', [
+                'message' => "Mahasiswa '{$user->name}' telah mengirim laporan magang untuk di-review.",
+                'report_id' => $report->id,
+                'student_id' => $user->id,
+            ]);
+        }
 
         return back()->with('success', 'Laporan berhasil diupload! Menunggu review dari dosen pembimbing.');
     }

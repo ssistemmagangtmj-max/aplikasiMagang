@@ -4,7 +4,7 @@
         <div class="space-y-6 animate-fade-in-up">
             <div class="flex justify-between items-center">
                 <p class="text-white/60 text-sm">Pilih perusahaan untuk mendaftar magang</p>
-                <a :href="route('mahasiswa.magang.custom')" @click.prevent="$inertia.visit(route('mahasiswa.magang.custom'))" class="btn-primary text-sm">+ Pengajuan Tempat Baru</a>
+                <a :href="route('mahasiswa.magang.baru')" @click.prevent="$inertia.visit(route('mahasiswa.magang.baru'))" class="btn-primary text-sm">+ Pengajuan Tempat Baru</a>
             </div>
             <div v-if="$page.props.errors?.apply" class="glass-card border-red-500/30 bg-red-500/10 p-4 text-red-300 text-sm">{{ $page.props.errors.apply }}</div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
